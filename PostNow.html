@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#f5f0e8">
+    <title>Post-Now</title>
+    <style>
+        :root {
+            --bg: #f5f0e8;
+            --surface: #ffffff;
+            --text: #2c2416;
+            --text-secondary: #8c7a6b;
+            --border: #e8e0d5;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.10);
+            --radius: 16px;
+            --radius-sm: 12px;
+            --radius-xs: 8px;
+            --accent: #5b4a3f;
+            --yellow: #fff7c2;
+            --yellow-border: #f0e5a0;
+            --pink: #ffe8ec;
+            --pink-border: #f5cfd6;
+            --blue: #e3f0ff;
+            --blue-border: #c8ddf5;
+            --green: #e6f5e6;
+            --green-border: #c8e6c8;
+            --orange: #fff0e0;
+            --orange-border: #f5dcc0;
+            --purple: #f3e8ff;
+            --purple-border: #e0ccf5;
+            --teal: #e0f7f5;
+            --teal-border: #c0e8e5;
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+        }
+
+        .dark {
+            --bg: #1a1814;
+            --surface: #25221c;
+            --text: #e8e0d5;
+            --text-secondary: #a09080;
+            --border: #3a342c;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.40);
+            --accent: #c4b5a5;
+            --yellow: #4a4520;
+            --yellow-border: #5e5828;
+            --pink: #4a3035;
+            --pink-border: #5e3e44;
+            --blue: #2a3545;
+            --blue-border: #364558;
+            --green: #2a3d2a;
+            --green-border: #364d36;
+            --orange: #453828;
+            --orange-border: #584a34;
+            --purple: #352e42;
+            --purple-border: #453c54;
+            --teal: #283e3b;
+            --teal-border: #34504c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            min-height: 100dvh;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: background var(--transition), color var(--transition);
+            overflow-x: hidden;
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+
+        /* ── Header ─────────────────────── */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg);
+            padding: 12px 16px;
+            padding-top: max(12px, env(safe-area-inset-top, 12px));
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background var(--transition);
+            border-bottom: 1px solid transparent;
+        }
+        .header.scrolled {
+            border-bottom-color: var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex-shrink: 0;
+        }
+        .logo-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            background: #f7c948;
+            box-shadow: 0 0 0 3px rgba(247, 201, 72, 0.2);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                box-shadow: 0 0 0 3px rgba(247, 201, 72, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(247, 201, 72, 0.05);
+            }
+        }
+
+        .header-spacer {
+            flex: 1;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all var(--transition);
+            box-shadow: var(--shadow);
+            flex-shrink: 0;
+            position: relative;
+        }
+        .icon-btn:active {
+            transform: scale(0.92);
+            opacity: 0.8;
+        }
+        .icon-btn.active {
+            background: var(--accent);
+            color: #fff;
+        }
+        .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #e05555;
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        /* ── Search Bar ────────────────── */
+        .search-wrap {
+            padding: 0 16px;
+            margin-bottom: 8px;
+            transition: all 0.25s ease;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        .search-wrap.open {
+            max-height: 60px;
+            opacity: 1;
+            margin-bottom: 12px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border-radius: 28px;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            font-size: 0.95rem;
+            color: var(--text);
+            font-family: var(--font);
+            outline: none;
+            transition: all var(--transition);
+        }
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(91, 74, 63, 0.08);
+        }
+        .search-icon-pos {
+            position: relative;
+        }
+        .search-icon-pos .s-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1rem;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ── Toolbar ───────────────────── */
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            padding: 0 16px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .chip {
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            white-space: nowrap;
+            font-family: var(--font);
+        }
+        .chip:active {
+            transform: scale(0.94);
+        }
+        .chip.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .chip .chip-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            margin-right: 5px;
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+        }
+
+        /* ── Notes Grid ────────────────── */
+        .notes-container {
+            padding: 0 12px 100px;
+            columns: 2;
+            column-gap: 10px;
+            transition: all var(--transition);
+        }
+        @media (min-width: 500px) {
+            .notes-container {
+                columns: 3;
+                column-gap: 12px;
+                padding: 0 16px 100px;
+            }
+        }
+        @media (min-width: 768px) {
+            .notes-container {
+                columns: 4;
+                column-gap: 14px;
+                padding: 0 20px 100px;
+            }
+        }
+
+        .note {
+            break-inside: avoid;
+            margin-bottom: 10px;
+            border-radius: var(--radius-sm);
+            padding: 14px 15px 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            border: 1.5px solid transparent;
+            animation: fadeInUp 0.35s ease forwards;
+            transform-origin: center;
+            word-break: break-word;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .note:active {
+            transform: scale(0.96);
+            transition: transform 0.1s ease;
+        }
+        .note.pinned {
+            border: 2px dashed var(--accent);
+        }
+        .note.pinned::after {
+            content: '📌';
+            position: absolute;
+            top: -8px;
+            right: 8px;
+            font-size: 0.8rem;
+            background: var(--surface);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            z-index: 2;
+        }
+
+        .note.yellow {
+            background: var(--yellow);
+            border-color: var(--yellow-border);
+        }
+        .note.pink {
+            background: var(--pink);
+            border-color: var(--pink-border);
+        }
+        .note.blue {
+            background: var(--blue);
+            border-color: var(--blue-border);
+        }
+        .note.green {
+            background: var(--green);
+            border-color: var(--green-border);
+        }
+        .note.orange {
+            background: var(--orange);
+            border-color: var(--orange-border);
+        }
+        .note.purple {
+            background: var(--purple);
+            border-color: var(--purple-border);
+        }
+        .note.teal {
+            background: var(--teal);
+            border-color: var(--teal-border);
+        }
+
+        .note-text {
+            font-size: 0.9rem;
+            line-height: 1.45;
+            color: var(--text);
+            min-height: 16px;
+            white-space: pre-wrap;
+            margin-bottom: 6px;
+        }
+        .note-text:empty::before {
+            content: 'Empty note';
+            color: var(--text-secondary);
+            opacity: 0.5;
+            font-style: italic;
+        }
+        .note-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+        .note-actions-row {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+        .note:hover .note-actions-row,
+        .note:focus-within .note-actions-row {
+            opacity: 1;
+        }
+        @media (hover: none) {
+            .note-actions-row {
+                opacity: 0.5;
+            }
+        }
+        .note-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            transition: all var(--transition);
+        }
+        .dark .note-btn {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .note-btn:active {
+            transform: scale(0.85);
+            background: rgba(0, 0, 0, 0.14);
+        }
+
+        /* ── FAB ────────────────────────── */
+        .fab {
+            position: fixed;
+            bottom: 28px;
+            bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+            right: 20px;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: #f7c948;
+            border: none;
+            color: #2c2416;
+            font-size: 1.6rem;
+            cursor: pointer;
+            box-shadow: 0 6px 24px rgba(247, 201, 72, 0.4);
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            font-weight: 300;
+            line-height: 1;
+        }
+        .fab:active {
+            transform: scale(0.88);
+            box-shadow: 0 3px 12px rgba(247, 201, 72, 0.5);
+        }
+
+        /* ── Modal ──────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .modal-sheet {
+            background: var(--surface);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px 20px 0 0;
+            padding: 20px 18px 28px;
+            padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+            animation: slideUp 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+            box-shadow: var(--shadow-lg);
+            max-height: 85vh;
+            overflow-y: auto;
+            transition: background var(--transition);
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        .modal-handle {
+            width: 36px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--border);
+            margin: 0 auto 16px;
+        }
+        .modal-textarea {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-family: var(--font);
+            color: var(--text);
+            resize: none;
+            outline: none;
+            line-height: 1.5;
+            min-height: 100px;
+        }
+        .modal-textarea::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+        .color-picker-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 14px 0;
+        }
+        .color-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all var(--transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        .color-dot:active {
+            transform: scale(0.85);
+        }
+        .color-dot.selected {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 5px rgba(91, 74, 63, 0.12);
+            transform: scale(1.08);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: var(--font);
+            transition: all var(--transition);
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+        }
+        .btn:active {
+            transform: scale(0.94);
+        }
+        .btn-primary {
+            background: #f7c948;
+            color: #2c2416;
+        }
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+        .btn-danger {
+            background: #fde8e8;
+            color: #a03030;
+        }
+        .dark .btn-danger {
+            background: #3d2020;
+            color: #f08080;
+        }
+        .char-count {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-align: right;
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+
+        /* ── Empty State ───────────────── */
+        .empty-state {
+            text-align: center;
+            padding: 60px 30px;
+            color: var(--text-secondary);
+            animation: fadeIn 0.5s ease;
+        }
+        .empty-state .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+        .empty-state h3 {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+        .empty-state p {
+            font-size: 0.85rem;
+        }
+
+        /* ── Toast ──────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--accent);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 300;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            box-shadow: var(--shadow-lg);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── Scrollbar ─────────────────── */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        /* ── Responsive ────────────────── */
+        @media (max-width: 380px) {
+            .notes-container {
+                columns: 1;
+                padding: 0 8px 100px;
+            }
+            .note {
+                margin-bottom: 8px;
+                padding: 12px 13px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── Header ── -->
+    <header class="header" id="header">
+        <div class="logo">
+            <span class="logo-dot"></span> Post-Now
+        </div>
+        <div class="header-spacer"></div>
+        <button class="icon-btn" id="btnSearch" aria-label="Search notes" title="Search">
+            🔍
+        </button>
+        <button class="icon-btn" id="btnDarkMode" aria-label="Toggle dark mode" title="Dark mode">
+            🌙
+        </button>
+        <button class="icon-btn" id="btnArchive" aria-label="Archived notes" title="Archive">
+            📁
+            <span class="badge" id="archiveBadge" style="display:none;">0</span>
+        </button>
+    </header>
+
+    <!-- ── Search Bar ── -->
+    <div class="search-wrap" id="searchWrap">
+        <div class="search-icon-pos">
+            <span class="s-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search notes...">
+        </div>
+    </div>
+
+    <!-- ── Color Filter Toolbar ── -->
+    <div class="toolbar" id="toolbar">
+        <button class="chip active" data-color="all">All</button>
+        <button class="chip" data-color="yellow"><span class="chip-dot" style="background:#f7e56b;"></span>Yellow</button>
+        <button class="chip" data-color="pink"><span class="chip-dot" style="background:#f5a0b5;"></span>Pink</button>
+        <button class="chip" data-color="blue"><span class="chip-dot" style="background:#a0c8f5;"></span>Blue</button>
+        <button class="chip" data-color="green"><span class="chip-dot" style="background:#a0d8a0;"></span>Green</button>
+        <button class="chip" data-color="orange"><span class="chip-dot" style="background:#f5c898;"></span>Orange</button>
+        <button class="chip" data-color="pinned">📌 Pinned</button>
+    </div>
+
+    <!-- ── Notes Grid ── -->
+    <main class="notes-container" id="notesContainer">
+        <!-- Notes rendered here -->
+    </main>
+
+    <!-- ── Empty State ── -->
+    <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="empty-icon">📝</div>
+        <h3>No notes yet</h3>
+        <p>Tap the <strong>+</strong> button to create your first note</p>
+    </div>
+
+    <!-- ── FAB ── -->
+    <button class="fab" id="fab" aria-label="Create new note" title="New note">+</button>
+
+    <!-- ── Modal (hidden by default) ── -->
+    <div class="modal-overlay" id="modalOverlay" style="display:none;">
+        <div class="modal-sheet" id="modalSheet">
+            <div class="modal-handle"></div>
+            <textarea
+            class="modal-textarea"
+            id="modalTextarea"
+            placeholder="Write something..."
+            maxlength="800"
+            rows="4"
+        ></textarea>
+        <div class="char-count" id="charCount">0 / 800</div>
+        <div class="color-picker-row" id="colorPicker">
+            <span class="color-dot selected" data-color="yellow" style="background:#fff7c2;" title="Yellow"></span>
+            <span class="color-dot" data-color="pink" style="background:#ffe8ec;" title="Pink"></span>
+            <span class="color-dot" data-color="blue" style="background:#e3f0ff;" title="Blue"></span>
+            <span class="color-dot" data-color="green" style="background:#e6f5e6;" title="Green"></span>
+            <span class="color-dot" data-color="orange" style="background:#fff0e0;" title="Orange"></span>
+            <span class="color-dot" data-color="purple" style="background:#f3e8ff;" title="Purple"></span>
+            <span class="color-dot" data-color="teal" style="background:#e0f7f5;" title="Teal"></span>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" id="btnPinNote">📌 Pin</button>
+            <button class="btn btn-danger" id="btnDeleteNote" style="display:none;">🗑 Delete</button>
+            <button class="btn btn-secondary" id="btnArchiveNote" style="display:none;">📁 Archive</button>
+            <button class="btn btn-primary" id="btnSaveNote">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Toast ── -->
+<div class="toast" id="toast"></div>
+
+<script>
+    (function() {
+        // ─────────────────────────────────────
+        //  STATE
+        // ─────────────────────────────────────
+        const STORAGE_KEY = 'postnow_notes';
+        const ARCHIVE_KEY = 'postnow_archive';
+        const DARK_KEY = 'postnow_dark';
+
+        let notes = [];
+        let archive = [];
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let editingNoteId = null; // null = creating new
+        let selectedColor = 'yellow';
+        let isPinned = false;
+        let isArchiveView = false;
+
+        // ─────────────────────────────────────
+        //  DOM REFS
+        // ─────────────────────────────────────
+        const $header = document.getElementById('header');
+        const $notesContainer = document.getElementById('notesContainer');
+        const $emptyState = document.getElementById('emptyState');
+        const $searchWrap = document.getElementById('searchWrap');
+        const $searchInput = document.getElementById('searchInput');
+        const $toolbar = document.getElementById('toolbar');
+        const $fab = document.getElementById('fab');
+        const $modalOverlay = document.getElementById('modalOverlay');
+        const $modalTextarea = document.getElementById('modalTextarea');
+        const $charCount = document.getElementById('charCount');
+        const $colorPicker = document.getElementById('colorPicker');
+        const $btnPinNote = document.getElementById('btnPinNote');
+        const $btnDeleteNote = document.getElementById('btnDeleteNote');
+        const $btnArchiveNote = document.getElementById('btnArchiveNote');
+        const $btnSaveNote = document.getElementById('btnSaveNote');
+        const $btnSearch = document.getElementById('btnSearch');
+        const $btnDarkMode = document.getElementById('btnDarkMode');
+        const $btnArchive = document.getElementById('btnArchive');
+        const $archiveBadge = document.getElementById('archiveBadge');
+        const $toast = document.getElementById('toast');
+        const $modalSheet = document.getElementById('modalSheet');
+
+        // ─────────────────────────────────────
+        //  PERSISTENCE
+        // ─────────────────────────────────────
+        function saveNotes() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+        }
+
+        function saveArchive() {
+            localStorage.setItem(ARCHIVE_KEY, JSON.stringify(archive));
+        }
+
+        function loadData() {
+            try {
+                const n = localStorage.getItem(STORAGE_KEY);
+                notes = n ? JSON.parse(n) : [];
+                const a = localStorage.getItem(ARCHIVE_KEY);
+                archive = a ? JSON.parse(a) : [];
+            } catch (e) {
+                notes = [];
+                archive = [];
+            }
+            // Migrate old notes without timestamps
+            notes.forEach(n => {
+                if (!n.createdAt) n.createdAt = Date.now();
+                if (!n.color) n.color = 'yellow';
+                if (n.pinned === undefined) n.pinned = false;
+            });
+            archive.forEach(a => {
+                if (!a.createdAt) a.createdAt = Date.now();
+                if (!a.color) a.color = 'yellow';
+                if (a.pinned === undefined) a.pinned = false;
+            });
+        }
+
+        // ─────────────────────────────────────
+        //  DARK MODE
+        // ─────────────────────────────────────
+        function applyDarkMode() {
+            const isDark = localStorage.getItem(DARK_KEY) === 'true';
+            document.body.classList.toggle('dark', isDark);
+            $btnDarkMode.textContent = isDark ? '☀️' : '🌙';
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.body.classList.contains('dark');
+            localStorage.setItem(DARK_KEY, !isDark);
+            applyDarkMode();
+            showToast(isDark ? 'Light mode' : 'Dark mode');
+        }
+
+        // ─────────────────────────────────────
+        //  TOAST
+        // ─────────────────────────────────────
+        let toastTimeout;
+
+        function showToast(msg) {
+            clearTimeout(toastTimeout);
+            $toast.textContent = msg;
+            $toast.classList.add('show');
+            toastTimeout = setTimeout(() => $toast.classList.remove('show'), 1800);
+        }
+
+        // ─────────────────────────────────────
+        //  RENDER
+        // ─────────────────────────────────────
+        function getFilteredNotes() {
+            const pool = isArchiveView ? archive : notes;
+            let filtered = [...pool];
+
+            // Color filter
+            if (currentFilter === 'pinned') {
+                filtered = filtered.filter(n => n.pinned);
+            } else if (currentFilter !== 'all') {
+                filtered = filtered.filter(n => n.color === currentFilter);
+            }
+
+            // Search filter
+            if (searchQuery.trim()) {
+                const q = searchQuery.trim().toLowerCase();
+                filtered = filtered.filter(n => n.text.toLowerCase().includes(q));
+            }
+
+            // Sort: pinned first, then by createdAt descending
+            filtered.sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return b.createdAt - a.createdAt;
+            });
+
+            return filtered;
+        }
+
+        function renderNotes() {
+            const filtered = getFilteredNotes();
+            $notesContainer.innerHTML = '';
+
+            if (filtered.length === 0) {
+                $emptyState.style.display = 'block';
+                if (isArchiveView) {
+                    $emptyState.querySelector('h3').textContent = 'Archive is empty';
+                    $emptyState.querySelector('p').textContent = 'Archived notes will appear here';
+                } else if (searchQuery) {
+                    $emptyState.querySelector('h3').textContent = 'No matches';
+                    $emptyState.querySelector('p').textContent = 'Try a different search term';
+                } else if (currentFilter !== 'all') {
+                    $emptyState.querySelector('h3').textContent = 'No notes in this category';
+                    $emptyState.querySelector('p').textContent = 'Create a note with this color';
+                } else {
+                    $emptyState.querySelector('h3').textContent = 'No notes yet';
+                    $emptyState.querySelector('p').textContent = 'Tap the + button to create your first note';
+                }
+            } else {
+                $emptyState.style.display = 'none';
+            }
+
+            filtered.forEach(note => {
+                const el = document.createElement('div');
+                el.className = `note ${note.color}${note.pinned ? ' pinned' : ''}`;
+                el.setAttribute('data-id', note.id);
+                el.innerHTML = `
+                <div class="note-text">${escapeHTML(note.text)}</div>
+                <div class="note-meta">
+                  <span>${formatDate(note.createdAt)}</span>
+                  <div class="note-actions-row">
+                    <button class="note-btn btn-pin-sm" data-id="${note.id}" title="${note.pinned ? 'Unpin' : 'Pin'}">${note.pinned ? '📌' : '📍'}</button>
+                    <button class="note-btn btn-archive-sm" data-id="${note.id}" title="${isArchiveView ? 'Restore' : 'Archive'}">${isArchiveView ? '↩️' : '📁'}</button>
+                    <button class="note-btn btn-del-sm" data-id="${note.id}" title="Delete">🗑</button>
+                  </div>
+                </div>
+              `;
+                // Click on note to edit
+                el.addEventListener('click', (e) => {
+                    // Don't open modal if a button was clicked
+                    if (e.target.closest('.note-btn')) return;
+                    openEditModal(note);
+                });
+                $notesContainer.appendChild(el);
+            });
+
+            // Attach button listeners
+            document.querySelectorAll('.btn-pin-sm').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = btn.getAttribute('data-id');
+                    togglePin(id);
+                });
+            });
+            document.querySelectorAll('.btn-archive-sm').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = btn.getAttribute('data-id');
+                    if (isArchiveView) {
+                        restoreFromArchive(id);
+                    } else {
+                        archiveNote(id);
+                    }
+                });
+            });
+            document.querySelectorAll('.btn-del-sm').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = btn.getAttribute('data-id');
+                    deleteNoteById(id);
+                });
+            });
+
+            updateArchiveBadge();
+        }
+
+        function updateArchiveBadge() {
+            if (archive.length > 0 && !isArchiveView) {
+                $archiveBadge.style.display = 'flex';
+                $archiveBadge.textContent = archive.length > 99 ? '99+' : archive.length;
+            } else {
+                $archiveBadge.style.display = 'none';
+            }
+        }
+
+        function escapeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function formatDate(ts) {
+            const d = new Date(ts);
+            const now = new Date();
+            const diff = now - d;
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+            if (diff < 604800000) return Math.floor(diff / 86400000) + 'd ago';
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        // ─────────────────────────────────────
+        //  NOTE CRUD
+        // ─────────────────────────────────────
+        function createNote(text, color, pinned) {
+            const note = {
+                id: generateId(),
+                text: text || '',
+                color: color || 'yellow',
+                pinned: pinned || false,
+                createdAt: Date.now(),
+            };
+            notes.unshift(note);
+            saveNotes();
+            renderNotes();
+            return note;
+        }
+
+        function updateNote(id, updates) {
+            const pool = isArchiveView ? archive : notes;
+            const idx = pool.findIndex(n => n.id === id);
+            if (idx === -1) return;
+            pool[idx] = { ...pool[idx], ...updates, id }; // preserve id
+            if (isArchiveView) saveArchive();
+            else saveNotes();
+            renderNotes();
+        }
+
+        function deleteNoteById(id) {
+            if (isArchiveView) {
+                archive = archive.filter(n => n.id !== id);
+                saveArchive();
+            } else {
+                notes = notes.filter(n => n.id !== id);
+                saveNotes();
+            }
+            renderNotes();
+            showToast('Note deleted');
+        }
+
+        function archiveNote(id) {
+            const idx = notes.findIndex(n => n.id === id);
+            if (idx === -1) return;
+            const [note] = notes.splice(idx, 1);
+            note.pinned = false; // unpin when archiving
+            archive.unshift(note);
+            saveNotes();
+            saveArchive();
+            renderNotes();
+            showToast('Note archived');
+        }
+
+        function restoreFromArchive(id) {
+            const idx = archive.findIndex(n => n.id === id);
+            if (idx === -1) return;
+            const [note] = archive.splice(idx, 1);
+            notes.unshift(note);
+            saveNotes();
+            saveArchive();
+            renderNotes();
+            showToast('Note restored');
+        }
+
+        function togglePin(id) {
+            const pool = isArchiveView ? archive : notes;
+            const note = pool.find(n => n.id === id);
+            if (!note) return;
+            note.pinned = !note.pinned;
+            if (isArchiveView) saveArchive();
+            else saveNotes();
+            renderNotes();
+            showToast(note.pinned ? 'Pinned' : 'Unpinned');
+        }
+
+        function generateId() {
+            return 'note_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+        }
+
+        // ─────────────────────────────────────
+        //  MODAL
+        // ─────────────────────────────────────
+        function openCreateModal() {
+            editingNoteId = null;
+            isPinned = false;
+            selectedColor = 'yellow';
+            $modalTextarea.value = '';
+            $charCount.textContent = '0 / 800';
+            $btnDeleteNote.style.display = 'none';
+            $btnArchiveNote.style.display = 'none';
+            $btnPinNote.textContent = '📌 Pin';
+            $btnPinNote.classList.remove('btn-primary');
+            $btnPinNote.classList.add('btn-secondary');
+            updateColorPickerUI();
+            $modalOverlay.style.display = 'flex';
+            setTimeout(() => $modalTextarea.focus(), 150);
+        }
+
+        function openEditModal(note) {
+            editingNoteId = note.id;
+            isPinned = note.pinned;
+            selectedColor = note.color;
+            $modalTextarea.value = note.text;
+            $charCount.textContent = `${note.text.length} / 800`;
+            $btnDeleteNote.style.display = 'inline-block';
+            $btnArchiveNote.style.display = 'inline-block';
+            $btnPinNote.textContent = note.pinned ? '📌 Pinned' : '📌 Pin';
+            if (note.pinned) {
+                $btnPinNote.classList.add('btn-primary');
+                $btnPinNote.classList.remove('btn-secondary');
+            } else {
+                $btnPinNote.classList.remove('btn-primary');
+                $btnPinNote.classList.add('btn-secondary');
+            }
+            updateColorPickerUI();
+            $modalOverlay.style.display = 'flex';
+            setTimeout(() => $modalTextarea.focus(), 150);
+        }
+
+        function closeModal() {
+            $modalOverlay.style.display = 'none';
+            editingNoteId = null;
+            $modalTextarea.value = '';
+            selectedColor = 'yellow';
+            isPinned = false;
+        }
+
+        function saveFromModal() {
+            const text = $modalTextarea.value.trim();
+            if (!text && !editingNoteId) {
+                // Don't create truly empty notes, but allow saving empty if editing
+                if (!editingNoteId) {
+                    showToast('Please write something');
+                    return;
+                }
+            }
+
+            if (editingNoteId) {
+                updateNote(editingNoteId, {
+                    text: text,
+                    color: selectedColor,
+                    pinned: isPinned,
+                });
+                showToast('Note updated');
+            } else {
+                if (!text) {
+                    showToast('Please write something');
+                    return;
+                }
+                createNote(text, selectedColor, isPinned);
+                showToast('Note created');
+            }
+            closeModal();
+            renderNotes();
+        }
+
+        function updateColorPickerUI() {
+            const dots = $colorPicker.querySelectorAll('.color-dot');
+            dots.forEach(d => {
+                d.classList.toggle('selected', d.getAttribute('data-color') === selectedColor);
+            });
+        }
+
+        // ─────────────────────────────────────
+        //  EVENT LISTENERS
+        // ─────────────────────────────────────
+        $fab.addEventListener('click', () => {
+            if (isArchiveView) {
+                // In archive view, FAB still creates in main notes
+                isArchiveView = false;
+                updateArchiveModeUI();
+            }
+            openCreateModal();
+        });
+
+        $modalOverlay.addEventListener('click', (e) => {
+            if (e.target === $modalOverlay) {
+                // If user wrote something, ask? For minimalism, just save draft-like? No, just close.
+                // But if there's text, maybe warn? For simplicity, just close.
+                if ($modalTextarea.value.trim() && !editingNoteId) {
+                    // Auto-save as draft if creating new with text
+                    createNote($modalTextarea.value.trim(), selectedColor, isPinned);
+                    showToast('Note saved');
+                }
+                closeModal();
+            }
+        });
+
+        // Prevent modal sheet click from closing
+        $modalSheet.addEventListener('click', (e) => e.stopPropagation());
+
+        $btnSaveNote.addEventListener('click', saveFromModal);
+        $btnDeleteNote.addEventListener('click', () => {
+            if (editingNoteId) {
+                deleteNoteById(editingNoteId);
+                closeModal();
+            }
+        });
+        $btnArchiveNote.addEventListener('click', () => {
+            if (editingNoteId) {
+                if (isArchiveView) {
+                    restoreFromArchive(editingNoteId);
+                } else {
+                    archiveNote(editingNoteId);
+                }
+                closeModal();
+            }
+        });
+        $btnPinNote.addEventListener('click', () => {
+            isPinned = !isPinned;
+            $btnPinNote.textContent = isPinned ? '📌 Pinned' : '📌 Pin';
+            if (isPinned) {
+                $btnPinNote.classList.add('btn-primary');
+                $btnPinNote.classList.remove('btn-secondary');
+            } else {
+                $btnPinNote.classList.remove('btn-primary');
+                $btnPinNote.classList.add('btn-secondary');
+            }
+        });
+
+        $colorPicker.addEventListener('click', (e) => {
+            const dot = e.target.closest('.color-dot');
+            if (!dot) return;
+            selectedColor = dot.getAttribute('data-color');
+            updateColorPickerUI();
+        });
+
+        $modalTextarea.addEventListener('input', () => {
+            const len = $modalTextarea.value.length;
+            $charCount.textContent = `${len} / 800`;
+            if (len > 780) {
+                $charCount.style.color = '#e05555';
+            } else {
+                $charCount.style.color = '';
+            }
+        });
+
+        // Search
+        $btnSearch.addEventListener('click', () => {
+            $searchWrap.classList.toggle('open');
+            if ($searchWrap.classList.contains('open')) {
+                $searchInput.focus();
+            } else {
+                $searchInput.value = '';
+                searchQuery = '';
+                renderNotes();
+            }
+        });
+        $searchInput.addEventListener('input', () => {
+            searchQuery = $searchInput.value;
+            renderNotes();
+        });
+
+        // Dark mode
+        $btnDarkMode.addEventListener('click', toggleDarkMode);
+
+        // Archive toggle
+        $btnArchive.addEventListener('click', () => {
+            isArchiveView = !isArchiveView;
+            updateArchiveModeUI();
+            renderNotes();
+            if (isArchiveView) {
+                showToast('Viewing archive');
+            } else {
+                showToast('Viewing notes');
+            }
+            // Close search when switching
+            $searchWrap.classList.remove('open');
+            $searchInput.value = '';
+            searchQuery = '';
+        });
+
+        function updateArchiveModeUI() {
+            if (isArchiveView) {
+                $btnArchive.classList.add('active');
+                $fab.style.opacity = '0.6';
+            } else {
+                $btnArchive.classList.remove('active');
+                $fab.style.opacity = '1';
+            }
+        }
+
+        // Toolbar filter chips
+        $toolbar.addEventListener('click', (e) => {
+            const chip = e.target.closest('.chip');
+            if (!chip) return;
+            currentFilter = chip.getAttribute('data-color');
+            // Update active chip
+            $toolbar.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            renderNotes();
+        });
+
+        // Header scroll shadow
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 8) {
+                $header.classList.add('scrolled');
+            } else {
+                $header.classList.remove('scrolled');
+            }
+        });
+
+        // Keyboard shortcut: Ctrl+N or N to create note
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                if ($modalOverlay.style.display === 'flex') closeModal();
+                openCreateModal();
+            }
+            if (e.key === 'Escape') {
+                if ($modalOverlay.style.display === 'flex') {
+                    closeModal();
+                }
+                if ($searchWrap.classList.contains('open')) {
+                    $searchWrap.classList.remove('open');
+                    $searchInput.value = '';
+                    searchQuery = '';
+                    renderNotes();
+                }
+            }
+        });
+
+        // ─────────────────────────────────────
+        //  TOUCH / SWIPE (simple) on notes
+        // ─────────────────────────────────────
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchNoteEl = null;
+
+        $notesContainer.addEventListener('touchstart', (e) => {
+            const noteEl = e.target.closest('.note');
+            if (!noteEl) return;
+            touchNoteEl = noteEl;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        $notesContainer.addEventListener('touchend', (e) => {
+            if (!touchNoteEl) return;
+            const dx = (e.changedTouches[0]?.clientX || touchStartX) - touchStartX;
+            const dy = (e.changedTouches[0]?.clientY || touchStartY) - touchStartY;
+            const absDx = Math.abs(dx);
+            const absDy = Math.abs(dy);
+
+            // Only trigger swipe if horizontal swipe is dominant and significant
+            if (absDx > 60 && absDx > absDy * 1.5) {
+                const id = touchNoteEl.getAttribute('data-id');
+                if (dx < -60) {
+                    // Swipe left = archive
+                    if (isArchiveView) {
+                        restoreFromArchive(id);
+                    } else {
+                        archiveNote(id);
+                    }
+                } else if (dx > 60) {
+                    // Swipe right = pin/unpin
+                    togglePin(id);
+                }
+            }
+            touchNoteEl = null;
+        });
+
+        // ─────────────────────────────────────
+        //  INIT
+        // ─────────────────────────────────────
+        function init() {
+            loadData();
+            applyDarkMode();
+            renderNotes();
+            updateArchiveModeUI();
+            // If no notes exist, add a welcome note
+            if (notes.length === 0 && archive.length === 0) {
+                createNote(
+                    'Welcome to Post-Now! 🎉\n\nTap the + button to create notes. Swipe right to pin, swipe left to archive. Tap a note to edit.',
+                    'yellow',
+                    true
+                );
+                createNote('This is a pink note. Try different colors!', 'pink', false);
+                createNote('Minimalist, fast, and beautiful. Your notes stay on this device.', 'blue', false);
+            }
+        }
+
+        init();
+        console.log('📝 Post-Now is ready!');
+        console.log('  Tap + to create | Swipe notes | Search with 🔍 | Dark mode with 🌙');
+    })();
+</script>
+</body>
+</html>
