@@ -1,2 +1,2 @@
-# VishuX-notes
+# NoteBook
 An app for writing notes
